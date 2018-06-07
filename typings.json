@@ -1,0 +1,7 @@
+{
+  "name": "koa-demo",
+  "dependencies": {},
+  "devDependencies": {
+    "koa-router": "registry:dt/koa-router#7.0.0+20170316163447"
+  }
+}
