@@ -3,21 +3,16 @@
  * @author liusong
  * @date 2018/6/8
  */
+// config files:
+const prodConfig = './config/config-prod.js';
+const testConfig = './config/config-test.js';
 
-// var config = {
-//     database: 'db_test', // 使用哪个数据库
-//     username: 'root', // 用户名
-//     password: 'gogogo15820', // 口令
-//     host: 'localhost', // 主机名
-//     port: 3306 // 端口号，MySQL默认3306
-// };
-// module.exports = config;
+var config = null;
 
+if (process.env.NODE_ENV === 'test') {
+    config = require(testConfig);
+} else {
+    config = require(prodConfig);
+}
 
-module.exports = {
-    database: 'db_test', // 使用哪个数据库
-    username: 'root', // 用户名
-    password: 'gogogo15820', // 口令
-    host: 'localhost', // 主机名
-    port: 3306 // 端口号，MySQL默认3306
-};
+module.exports = config;

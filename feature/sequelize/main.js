@@ -1,5 +1,4 @@
 const Sequelize = require('sequelize');
-var mysql = require('mysql');
 const config = require('./config');
 
 // 可以简单地使用 uri 连接
