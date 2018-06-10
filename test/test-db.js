@@ -1,6 +1,7 @@
-const model = require('./model');
-
-let User = model.User;
+/**
+ * 测试封装的db
+ */
+const User = require('../models/User.js');
 
 (async () => {
     let user = await User.create({

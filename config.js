@@ -5,7 +5,7 @@
  */
 // config files:
 const prodConfig = './config/config-prod.js';
-const testConfig = './config/config-test.js';
+const testConfig = './config/config-test-db.js';
 
 var config = null;
 

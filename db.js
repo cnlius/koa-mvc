@@ -1,11 +1,11 @@
 const Sequelize = require('sequelize');
 const config = require('./config');
 
-console.log('init sequelize...');
+console.log('init Sequelize...');
 
 /**
  * sequelize数据库连接配置
- * @type {Sequelize|sequelize}
+ * @type {sequelize.Sequelize | sequelize}
  */
 const sequelize = new Sequelize(config.database, config.username, config.password, {
     host: config.host,
@@ -18,7 +18,6 @@ const sequelize = new Sequelize(config.database, config.username, config.passwor
     }
 });
 
-const ID_TYPE = Sequelize.INTEGER;
 
 /**
  * model模板
@@ -31,19 +30,12 @@ function defineModel(name, attributes) {
     let attrs = {};
     for (let key in attributes) {
         let value = attributes[key];
-        if (typeof value === 'object' && value['type']) {
-            value.allowNull = value.allowNull || false;
-            attrs[key] = value;
-        } else {
-            attrs[key] = {
-                type: value,
-                allowNull: false
-            };
-        }
+        value.allowNull = value.allowNull || false;
+        attrs[key] = value;
     }
     //默认的字段
     attrs.id = {
-        type: ID_TYPE,
+        type: Sequelize.INTEGER,
         primaryKey: true
     };
     attrs.createdAt = {
@@ -63,15 +55,22 @@ function defineModel(name, attributes) {
         timestamps: false,
         //模型生命周期检查钩子
         hooks: {
+            //操作数据库开始时设置默认字段
             beforeValidate: function (obj) {
-                let now = new Date();
+                let date = new Date();
+                let seconds = date.getSeconds();
+                if (date.getSeconds() < 10) {
+                    seconds = '0' + date.getSeconds();
+                }
+                let curTime = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate()
+                    + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + seconds;
                 //判断是否是新纪录
                 if (obj.isNewRecord) {
-                    obj.createdAt = now;
-                    obj.updatedAt = now;
+                    obj.createdAt = curTime;
+                    obj.updatedAt = curTime;
                     obj.version = 0;
                 } else {
-                    obj.updatedAt = now;
+                    obj.updatedAt = curTime;
                     obj.version++;
                 }
             }
@@ -79,22 +78,9 @@ function defineModel(name, attributes) {
     });
 }
 
-const TYPES = ['STRING', 'INTEGER', 'BIGINT', 'TEXT', 'DOUBLE', 'DATEONLY', 'BOOLEAN'];
 
-var exp = {
-    defineModel: defineModel,
-    sync: () => {
-        // only allow create ddl in non-production environment:
-        if (process.env.NODE_ENV !== 'production') {
-            sequelize.sync({ force: true });
-        } else {
-            throw new Error('Cannot sync() when NODE_ENV is set to \'production\'.');
-        }
-    }
+var db = {
+    defineModel: defineModel
 };
 
-for (let type of TYPES) {
-    exp[type] = Sequelize[type];
-}
-
-module.exports = exp;
+module.exports = db;
