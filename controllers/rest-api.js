@@ -1,0 +1,25 @@
+const products = require('../test/test-rest-data');
+const APIError = require('../rest').APIError;
+
+module.exports = {
+    'GET /api/products2': async (ctx, next) => {
+        ctx.rest({
+            products: products.getProducts()
+        });
+    },
+
+    'POST /api/products2': async (ctx, next) => {
+        let p = products.createProduct(ctx.request.body.name, ctx.request.body.manufacturer, parseFloat(ctx.request.body.price));
+        ctx.rest(p);
+    },
+
+    'DELETE /api/products2/:id': async (ctx, next) => {
+        console.log(`delete product ${ctx.params.id}...`);
+        let p = products.deleteProduct(ctx.params.id);
+        if (p) {
+            ctx.rest(p);
+        } else {
+            throw new APIError('product:not_found', 'product not found by id.');
+        }
+    }
+};
